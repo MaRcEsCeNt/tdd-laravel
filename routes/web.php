@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/products', 'ProductsController@store');
+Route::patch('/products/{product}', 'ProductsController@update');
