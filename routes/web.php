@@ -17,3 +17,7 @@ Route::get('/', function () {
 
 Route::post('/products', 'ProductsController@store');
 Route::patch('/products/{product}', 'ProductsController@update');
+Route::delete('/products/{product}', 'ProductsController@destroy');
+
+
+Route::post('/company', 'CompaniesController@store');

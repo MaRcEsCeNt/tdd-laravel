@@ -8,17 +8,29 @@ use Illuminate\Http\Request;
 class ProductsController extends Controller
 {
     public function store() {
-        Product::create($this->validateRequest());
+        $product = Product::create($this->validateRequest());
+        
+        return redirect($product->path());
     }
 
     public function update(Product $product) {
         $product->update($this->validateRequest());
+
+        return redirect($product->path());
     }
 
-    public function validateRequest() {
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        return redirect('/products');
+    }
+
+    protected function validateRequest() {
         return request()->validate([
             'title' => 'required',
-            'brand' => 'required'
+            'brand' => 'required',
+            'packagedOn' => 'required'
         ]);
     }
 }
