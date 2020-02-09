@@ -29,7 +29,7 @@ class ProductsController extends Controller
     protected function validateRequest() {
         return request()->validate([
             'title' => 'required',
-            'brand' => 'required',
+            'company_id' => 'required',
             'packagedOn' => 'required|date'
         ]);
     }

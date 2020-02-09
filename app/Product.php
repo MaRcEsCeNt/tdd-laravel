@@ -20,4 +20,11 @@ class Product extends Model
     {
         $this->attributes['packagedOn'] = Carbon::parse($datePackagedOn);
     }
+
+    public function setCompanyIdAttribute($company)
+    {
+        $this->attributes['company_id'] = (Company::firstOrCreate([
+            'name' => $company,
+        ]))->id;
+    }
 }
