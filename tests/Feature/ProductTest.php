@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Product;
+use Carbon\Carbon;
 
 class ProductTest extends TestCase
 {
@@ -17,13 +18,17 @@ class ProductTest extends TestCase
         $response = $this->post('/products', [
             'title' => 'Product Title',
             'brand' => 'Brand Name',
-            'packagedOn' => '01/11/2019'
+            'packagedOn' => '11/01/2019'
         ]);
 
         $this->assertCount(1, Product::all());
 
         $product = Product::first();
         $response->assertRedirect($product->path());
+
+        $this->assertInstanceOf(Carbon::class, $product->packagedOn);
+        $this->assertEquals('2019/11/01', $product->packagedOn->format('Y/m/d'));
+
     }
 
     /** @test */
@@ -32,7 +37,7 @@ class ProductTest extends TestCase
         $this->post('/products', [
             'title' => 'Product Title',
             'brand' => 'Brand Name',
-            'packagedOn' => '01/11/2019'
+            'packagedOn' => '12/01/2019'
         ]);
 
         $product = Product::first();
@@ -40,12 +45,13 @@ class ProductTest extends TestCase
         $response = $this->patch($product->path(), [
             'title' => 'New Product Title',
             'brand' => 'New Brand Name',
-            'packagedOn' => '01/12/2019'
+            'packagedOn' => '12/01/2019'
         ]);
 
         $this->assertEquals('New Product Title', Product::first()->title);
         $this->assertEquals('New Brand Name', Product::first()->brand);
-        $this->assertEquals('01/12/2019', Product::first()->packagedOn);
+        $this->assertInstanceOf(Carbon::class, $product->fresh()->packagedOn);
+        $this->assertEquals('2019/12/01', $product->fresh()->packagedOn->format('Y/m/d'));
         $response->assertRedirect($product->fresh()->path());
     }
 
@@ -55,7 +61,7 @@ class ProductTest extends TestCase
         $this->post('/products', [
             'title' => 'Product Title',
             'brand' => 'Brand Name',
-            'packagedOn' => '01/11/2019'
+            'packagedOn' => '12/01/2019'
         ]);
 
         $product = Product::first();
@@ -100,5 +106,29 @@ class ProductTest extends TestCase
             ]);
     
             $response->assertSessionHasErrors('packagedOn');
+        }
+
+        /** @test */
+        public function packagedOnIsADate()
+        {
+            $response = $this->post('/products', [
+                'title' => 'Product Title',
+                'brand' => 'Brand Name',
+                'packagedOn' => 'String'
+            ]);
+    
+            $response->assertSessionHasErrors('packagedOn');
+            $this->assertCount(0, Product::all());
+
+            $response = $this->post('/products', [
+                'title' => 'Product Title',
+                'brand' => 'Brand Name',
+                'packagedOn' => '11/01/2019'
+            ]);
+
+            $response->assertSessionHasNoErrors('packagedOn');
+            $this->assertCount(1, Product::all());
+            $this->assertInstanceOf(Carbon::class, Product::first()->packagedOn);
+            $this->assertEquals('2019/11/01', Product::first()->packagedOn->format('Y/m/d'));
         }
 }

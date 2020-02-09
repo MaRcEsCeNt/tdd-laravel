@@ -15,8 +15,6 @@ class CompanyTest extends TestCase
     /** @test */
     public function storeCompany()
     {
-        $this->withoutExceptionHandling();
-
         $this->post('/company', [
             'name' => 'Company Name',
             'dob' => '05/14/1988'

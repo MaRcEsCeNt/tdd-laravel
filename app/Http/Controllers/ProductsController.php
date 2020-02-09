@@ -30,7 +30,7 @@ class ProductsController extends Controller
         return request()->validate([
             'title' => 'required',
             'brand' => 'required',
-            'packagedOn' => 'required'
+            'packagedOn' => 'required|date'
         ]);
     }
 }
